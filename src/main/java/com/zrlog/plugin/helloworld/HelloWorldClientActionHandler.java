@@ -11,11 +11,12 @@ public class HelloWorldClientActionHandler extends ClientActionHandler {
     @Override
     public void httpMethod(IOSession session, MsgPacket msgPacket) {
         HttpRequestInfo httpRequestInfo = new Gson().fromJson(msgPacket.getDataStr(), HttpRequestInfo.class);
-        /*if (httpRequestInfo.getUri().startsWith("/")) {
-            //code path
+        if (httpRequestInfo.getUri().startsWith("/xxxxxxx-hello-world")) {
+            //这里可以处理一些特殊请求
+            super.httpMethod(session, msgPacket);
         } else {
             super.httpMethod(session, msgPacket);
-        }*/
+        }
     }
 
     @Override
