@@ -50,18 +50,18 @@
         </h3>
     </div>
     <hr style="color: #a4a1a1"/>
-    <form role="form" id="ajaxhelloworld" class="form-horizontal">
+    <form role="form" id="ajaxform" class="form-horizontal">
         <div class="form-group mb-3 row">
-            <label class="col-md-3 control-label no-padding-right"> uriPath </label>
+            <label class="col-md-3 control-label no-padding-right" for="uriPath"> uriPath </label>
             <div class="col-md-4">
-                <input type="text" placeholder="" class="form-control" :value="val(config.uriPath)"
+                <input type="text" placeholder="" id="uriPath" class="form-control" :value="val(config.uriPath)"
                        name="uriPath">
             </div>
         </div>
         <hr style="color: #a4a1a1"/>
         <div class="form-group row mb-3">
             <div class="col-sm-3"></div>
-            <button class="btn btn-primary" type="button" id="helloworld" style="max-width: 80px;margin-left: 12px">
+            <button class="btn btn-primary" type="button" id="form" style="max-width: 80px;margin-left: 12px">
                 提交
             </button>
         </div>
