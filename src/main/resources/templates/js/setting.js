@@ -5,7 +5,7 @@ $(function () {
     new Vue({
         el: '#vue-div',
         data: {
-            rss: e,
+            config: e,
             version: e.version,
         },
         methods: {
