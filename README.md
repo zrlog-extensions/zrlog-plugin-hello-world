@@ -39,7 +39,7 @@ export PATH=${JAVA_HOME}/bin:$PATH
 #### 手动打包（强烈不推荐）
 
 ```
-sh bin/package-native-github.sh
+sh bin/package-native-github.sh /tmp/download/plugin
 ```
 
 通过 scp 或者其他自选途径更新或者加载插件
