@@ -42,7 +42,7 @@ public class HelloWorldController {
         session.sendJsonMsg(keyMap, ActionType.GET_WEBSITE.name(), IdUtil.getInt(), MsgPacketStatus.SEND_REQUEST, msgPacket -> {
             Map map = new Gson().fromJson(msgPacket.getDataStr(), Map.class);
             Map<String, Object> data = new HashMap<>();
-            data.put("theme", Objects.equals(requestInfo.getHeader().get("Dark-Mode"), "true") ? "dark" : "light");
+            data.put("theme", requestInfo.isDarkMode() ? "dark" : "light");
             if (Objects.isNull(map.get("uriPath"))) {
                 map.put("uriPath", "/");
             }
