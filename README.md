@@ -30,7 +30,7 @@ export PATH=${JAVA_HOME}/bin:$PATH
 
 #### 打包
 
-##### github-actions，直接打包上传制 oss（推荐）
+##### github-actions，直接打包上传
  
 1. 配置需仓库变量 `SECRET_ID`,`SECRET_KEY`,`BUCKET`， 
 2. 默认 oss 上传的 endpoint 为 `oss-cn-chengdu` 如果不在，需要改 `bin/upload-bin.sh` 对应区域
