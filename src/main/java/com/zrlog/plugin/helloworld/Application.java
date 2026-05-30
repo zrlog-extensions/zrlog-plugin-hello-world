@@ -18,9 +18,8 @@ public class Application {
      * @param args
      */
     public static void main(String[] args) throws IOException {
-        List<Class> classList = new ArrayList<>();
+        List<Class<?>> classList = new ArrayList<>();
         classList.add(HelloWorldController.class);
         new NioClient(connectHandler, new SimpleTemplateRender(), new HelloWorldClientActionHandler()).connectServer(args, classList, HelloWorldPluginAction.class);
     }
 }
-
