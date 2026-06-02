@@ -1,4 +1,4 @@
-import {Button, Col, Divider, Form, Input, Row, Space, Tag, Typography, message, theme} from "antd";
+import {Button, Col, Divider, Form, Grid, Input, Row, Space, Tag, Typography, message, theme} from "antd";
 import {SaveOutlined} from "@ant-design/icons";
 import axios from "axios";
 import {FunctionComponent, useEffect, useMemo, useState} from "react";
@@ -14,6 +14,9 @@ type HelloWorldFormValues = {
 
 const PluginSettings: FunctionComponent<PluginSettingsProps> = ({data}) => {
     const {token} = theme.useToken();
+    const screens = Grid.useBreakpoint();
+    const isPhone = Boolean(screens.xs && !screens.sm);
+    const isCompact = !screens.md;
     const [form] = Form.useForm<HelloWorldFormValues>();
     const [loading, setLoading] = useState(false);
     const [messageApi, contextHolder] = message.useMessage();
@@ -28,19 +31,19 @@ const PluginSettings: FunctionComponent<PluginSettingsProps> = ({data}) => {
     const shellStyle = useMemo(() => ({
         maxWidth: 980,
         margin: "0 auto",
-        padding: 24,
+        padding: isPhone ? 12 : isCompact ? 16 : 24,
         color: token.colorText,
         background: token.colorBgLayout,
         minHeight: "100vh",
         boxSizing: "border-box" as const,
-    }), [token]);
+    }), [isCompact, isPhone, token]);
 
     const panelStyle = useMemo(() => ({
-        padding: 24,
+        padding: isPhone ? 16 : 24,
         border: `1px solid ${token.colorBorderSecondary}`,
         borderRadius: 8,
         background: token.colorBgContainer,
-    }), [token]);
+    }), [isPhone, token]);
 
     const submit = async (values: HelloWorldFormValues) => {
         setLoading(true);
@@ -68,17 +71,17 @@ const PluginSettings: FunctionComponent<PluginSettingsProps> = ({data}) => {
             <Space direction="vertical" size={20} style={{width: "100%"}}>
                 <div style={{display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap"}}>
                     <Space direction="vertical" size={4}>
-                        <Space wrap>
-                            <Typography.Title level={3} style={{margin: 0}}>{data.plugin.name}</Typography.Title>
+                        <Space wrap style={{maxWidth: "100%"}}>
+                            <Typography.Title level={3} style={{margin: 0, fontSize: isPhone ? 20 : undefined}}>{data.plugin.name}</Typography.Title>
                             <Tag>v{version}</Tag>
                         </Space>
-                        <Typography.Text type="secondary">{data.plugin.desc}</Typography.Text>
+                        <Typography.Text type="secondary" style={{display: "block", maxWidth: "100%"}}>{data.plugin.desc}</Typography.Text>
                     </Space>
                 </div>
 
                 <div style={panelStyle}>
                     <Form form={form} layout="vertical" onFinish={submit} requiredMark={false}>
-                        <Row gutter={16}>
+                        <Row gutter={[isCompact ? 12 : 16, 0]}>
                             <Col xs={24} md={12}>
                                 <Form.Item label="URI 路径" name="uriPath">
                                     <Input autoComplete="off"/>
@@ -88,7 +91,7 @@ const PluginSettings: FunctionComponent<PluginSettingsProps> = ({data}) => {
 
                         <Divider/>
 
-                        <Button type="primary" htmlType="submit" icon={<SaveOutlined/>} loading={loading}>
+                        <Button type="primary" htmlType="submit" icon={<SaveOutlined/>} loading={loading} style={isPhone ? {width: "100%"} : undefined}>
                             保存
                         </Button>
                     </Form>
