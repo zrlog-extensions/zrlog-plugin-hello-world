@@ -11,7 +11,6 @@ import com.zrlog.plugin.type.ActionType;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class HelloWorldController {
 
@@ -29,10 +28,9 @@ public class HelloWorldController {
     }
 
     public void update() {
-        session.sendMsg(new MsgPacket(requestInfo.simpleParam(), ContentType.JSON, MsgPacketStatus.SEND_REQUEST, IdUtil.getInt(), ActionType.SET_WEBSITE.name()), msgPacket -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("success", true);
-            session.sendMsg(new MsgPacket(map, ContentType.JSON, MsgPacketStatus.RESPONSE_SUCCESS, requestPacket.getMsgId(), requestPacket.getMethodStr()));
+        HelloWorldConfig request = HelloWorldConfig.fromUriPath(paramValue("uriPath"));
+        session.sendMsg(new MsgPacket(request, ContentType.JSON, MsgPacketStatus.SEND_REQUEST, IdUtil.getInt(), ActionType.SET_WEBSITE.name()), msgPacket -> {
+            response(HelloWorldApiResponse.success());
         });
     }
 
@@ -51,36 +49,34 @@ public class HelloWorldController {
         response(pageData());
     }
 
-    private Map<String, Object> pageData() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("dark", isDarkMode());
-        data.put("colorPrimary", getAdminColorPrimary());
-        data.put("plugin", session.getPlugin());
-        data.put("config", loadConfig());
-        return successMap(data);
+    private HelloWorldApiResponse<HelloWorldPageData> pageData() {
+        HelloWorldPageData data = new HelloWorldPageData();
+        data.setDark(isDarkMode());
+        data.setColorPrimary(getAdminColorPrimary());
+        data.setPlugin(session.getPlugin());
+        data.setConfig(loadConfig());
+        return HelloWorldApiResponse.success(data);
     }
 
-    private Map<String, Object> loadConfig() {
-        Map<String, Object> keyMap = new HashMap<>();
-        keyMap.put("key", CONFIG_KEYS);
-        Map response = session.getResponseSync(ContentType.JSON, keyMap, ActionType.GET_WEBSITE, Map.class);
-        Map<String, Object> config = response == null ? new HashMap<>() : new HashMap<>(response);
-        if (Objects.isNull(config.get("uriPath"))) {
-            config.put("uriPath", "/");
+    private HelloWorldConfig loadConfig() {
+        HelloWorldConfig config = session.getResponseSync(ContentType.JSON, WebsiteKeyRequest.of(CONFIG_KEYS), ActionType.GET_WEBSITE,
+                HelloWorldConfig.class);
+        if (config == null) {
+            config = new HelloWorldConfig();
         }
-        config.put("version", session.getPlugin().getVersion());
+        config.normalize(session.getPlugin().getVersion());
         return config;
     }
 
-    private Map<String, Object> successMap(Object data) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("success", true);
-        map.put("data", data);
-        return map;
+    private void response(Object data) {
+        session.sendMsg(ContentType.JSON, data, requestPacket.getMethodStr(), requestPacket.getMsgId(), MsgPacketStatus.RESPONSE_SUCCESS);
     }
 
-    private void response(Map<String, Object> map) {
-        session.sendMsg(ContentType.JSON, map, requestPacket.getMethodStr(), requestPacket.getMsgId(), MsgPacketStatus.RESPONSE_SUCCESS);
+    private String paramValue(String key) {
+        if (requestInfo.getParam() == null || requestInfo.getParam().get(key) == null || requestInfo.getParam().get(key).length == 0) {
+            return "";
+        }
+        return requestInfo.getParam().get(key)[0];
     }
 
     private boolean isDarkMode() {
