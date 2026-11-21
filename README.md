@@ -41,14 +41,17 @@ export PATH=${JAVA_HOME}/bin:$PATH
 
 ### GitHub Actions
  
-1. 配置仓库变量 `SECRET_ID`、`SECRET_KEY`、`BUCKET`
-2. 默认 OSS 上传 endpoint 为 `oss-cn-chengdu`，如需使用其他区域，修改 `bin/upload-bin.sh`
-3. 提交代码后，由 actions 打包 jar 和 native-image 包
+1. 在仓库的 Actions Secrets 配置 `SECRET_ID`、`SECRET_KEY`、`BUCKET` 和 OSS endpoint `HOST`。
+2. 推送到 `main` 后，由 Actions 使用 `zrlog-build` 打包 JAR 和 Native Image。
 
 ### 手动打包
 
-```
-sh bin/package-native-github.sh /tmp/download/plugin
+在插件仓库根目录执行以下命令。复现 CI 时，使用工作流固定的构建脚本提交。
+
+```bash
+git clone https://github.com/zrlog/zrlog-build.git ../zrlog-build
+git -C ../zrlog-build checkout --detach e8532208950a2c8902c1dec1b4e259f08af922e5
+PLUGIN_PACKAGE_PREVIEW=false bash ../zrlog-build/scripts/plugin/build-native.sh /tmp/download/plugin
 ```
 
 打包后可通过插件管理页面或其他部署流程加载插件。
@@ -59,7 +62,7 @@ Linux amd64/arm64 制品在上传前会调用 `zrlog-artifact-service`，通过�
 相同的固定发布版 [`zrlog-build`](https://github.com/zrlog/zrlog-build)
 Action（`v1.0.1`，工作流固定完整 SHA）完成压缩和 SHA-256、文件大小校验；接入与故障处理见该仓库 README。
 处理成功后才会生成最终制品的 MD5 并上传；处理失败会停止该平台的发布。
-服务接收的版本号使用 `bin/build-info.sh` 生成的实际插件版本。
+服务接收的版本号来自 `zrlog-build` 构建脚本生成的 `plugin.properties`。
 
 发布前需要配置 Actions Secret `ARTIFACT_SERVICE_TOKEN`，可在仓库中单独设置，
 或授权该仓库使用同名组织 Secret。服务地址为 `https://webdav.zrlog.com/artifact`。
